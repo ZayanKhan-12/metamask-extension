@@ -19,6 +19,7 @@ import { useGasFeeEstimates } from '../../../../../../hooks/useGasFeeEstimates';
 import { selectConversionRateByChainId } from '../../../../../../selectors';
 import { useTransactionGasLimit } from '../../../../hooks/gas/useTransactionGasLimit';
 import { HEX_ZERO } from '../shared/constants';
+import { logConfirmationTransactionDebug } from '../../../../utils/enforced-simulations-debug';
 import { useEIP1559TxFees } from './useEIP1559TxFees';
 import { useSupportsEIP1559 } from './useSupportsEIP1559';
 import { useTransactionGasFeeEstimate } from './useTransactionGasFeeEstimate';
@@ -195,6 +196,25 @@ export function useFeeCalculations(transactionMeta: TransactionMeta) {
     optimizedGasLimit,
     supportsEIP1559,
   ]);
+
+  logConfirmationTransactionDebug('fee-calculated', transactionMeta, {
+    optimizedGasLimit,
+    quotedGasLimit,
+    gasFeeEstimate,
+    estimatedBaseFee,
+    maxFeePerGas,
+    maxPriorityFeePerGas,
+    gasPrice,
+    supportsEIP1559,
+    hasLayer1GasFee,
+    layer1GasFee,
+    estimatedFeeHex: estimatedFees.hexFee,
+    estimatedFeeNative: estimatedFees.nativeCurrencyFee,
+    estimatedFeeFiat: estimatedFees.currentCurrencyFee,
+    maxFeeHex,
+    maxFeeNative,
+    maxFeeFiat,
+  });
 
   const calculateGasEstimateCallback = useCallback(
     ({
