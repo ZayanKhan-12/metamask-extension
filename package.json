@@ -301,7 +301,8 @@
     "@metamask/multichain-account-service": "^11.0.0",
     "@pmmmwh/react-refresh-webpack-plugin@npm:^0.5.11": "patch:@pmmmwh/react-refresh-webpack-plugin@npm%3A0.5.13#~/.yarn/patches/@pmmmwh-react-refresh-webpack-plugin-npm-0.5.13-25d13d4186.patch",
     "@metamask/assets-controller@npm:^9.1.0": "^10.1.0",
-    "@metamask/messenger": "^2.0.0"
+    "@metamask/messenger": "^2.0.0",
+    "metamask-crx@workspace:./@metamask/react-data-query@npm:^0.2.2": "npm:@metamask-previews/react-data-query@0.2.2-preview-789f7f935"
   },
   "dependencies": {
     "@babel/runtime": "patch:@babel/runtime@npm%3A7.29.2#~/.yarn/patches/@babel-runtime-npm-7.29.2-b49cad1c67.patch",
@@ -858,11 +859,5 @@
       }
     },
     "version": "v0.3.0"
-  },
-  "previewBuilds": {
-    "@metamask/react-data-query": {
-      "previewVersion": "0.2.1-preview-75ce9748b",
-      "type": "breaking"
-    }
   }
 }
