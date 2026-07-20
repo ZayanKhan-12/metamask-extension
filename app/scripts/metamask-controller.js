@@ -907,10 +907,6 @@ export default class MetamaskController extends EventEmitter {
       addressBookController: this.addressBookController,
       accountsController: this.accountsController,
       networkController: this.networkController,
-      trackMetaMetricsEvent: this.controllerMessenger.call.bind(
-        this.controllerMessenger,
-        'MetaMetricsController:trackEvent',
-      ),
     });
     this.geolocationController = messengerClientsByName.GeolocationController;
 
@@ -992,7 +988,6 @@ export default class MetamaskController extends EventEmitter {
       messenger: walletFundsObtainedMonitorMessenger,
       events: ['NotificationServicesController:notificationsListUpdated'],
       actions: [
-        'MetaMetricsController:trackEvent',
         'AppStateController:setCanTrackWalletFundsObtained',
         'OnboardingController:getState',
         'NotificationServicesController:getState',
@@ -3639,7 +3634,6 @@ export default class MetamaskController extends EventEmitter {
               excludeMetaMetricsId: options?.excludeMetaMetricsId,
               matomoEvent: options?.matomoEvent,
             }),
-          options,
         );
       },
       trackAnalyticsEvent: trackEvent,
@@ -7609,10 +7603,15 @@ export default class MetamaskController extends EventEmitter {
             );
           },
           startTrace: (options) => {
-            // We intentionally strip out `_isStandaloneSpan` since it can be undefined
-            // eslint-disable-next-line no-unused-vars
-            const { _isStandaloneSpan, ...result } = trace(options);
-            return result;
+            // Must return a JSON-serializable TraceContext: spreading the raw
+            // Sentry Span leaks internal `undefined` fields that fail the snap
+            // response's JSON validation, and only the `SerializedTraceContext`
+            // shape round-trips into a later `startTrace` `parentContext`.
+            const span = trace(options);
+            const spanContext = span?.spanContext?.();
+            return spanContext
+              ? { _traceId: spanContext.traceId, _spanId: spanContext.spanId }
+              : {};
           },
           endTrace,
           getAllowedKeyringMethods: keyringSnapPermissionsBuilder(
