@@ -108,6 +108,11 @@ type MoreButtonsGroupProps<TagElem extends React.ElementType = 'div'> = {
   actions: {
     label: string;
     onClick: () => void;
+    /**
+     * Optional override used only when a single enabled action is rendered as
+     * the primary row button (i.e., not inside the dropdown).
+     */
+    onClickForSingle?: () => void;
     testId?: string;
     iconName: IconName;
     iconClassName?: string;
@@ -142,7 +147,7 @@ const MoreButtonsGroup = ({
         }
         label={onlyEnabledAction.label}
         width={BlockSize.Full}
-        onClick={onlyEnabledAction.onClick}
+        onClick={onlyEnabledAction.onClickForSingle ?? onlyEnabledAction.onClick}
       />
     );
   }
@@ -464,6 +469,7 @@ const CoinButtons = ({
   }, [location, openBridgeExperience]);
 
   const handleReceiveOnClick = useCallback(() => {
+    // Primary row action: preserve forward page transition on navigation
     trace({ name: TraceName.ReceiveModal });
     trackEvent(
       createEventBuilder(MetaMetricsEventName.NavReceiveButtonClicked)
@@ -480,11 +486,38 @@ const CoinButtons = ({
 
     if (selectedAccountGroup) {
       // Navigate to the multichain address list page with receive source
+      transitionForward(() =>
+        navigate(
+          getMultichainAccountAddressListReceivePagePath(selectedAccountGroup),
+        ),
+      );
+    } else {
+      // Show the traditional receive modal
+      setShowReceiveModal(true);
+    }
+  }, [selectedAccountGroup, navigate, trackEvent, trackingLocation, chainId]);
+
+  const handleReceiveOnClickNoTransition = useCallback(() => {
+    // Dropdown action: avoid forward page transition
+    trace({ name: TraceName.ReceiveModal });
+    trackEvent(
+      createEventBuilder(MetaMetricsEventName.NavReceiveButtonClicked)
+        .addCategory(MetaMetricsEventCategory.Navigation)
+        .addProperties({
+          text: 'Receive',
+          location: trackingLocation,
+          // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          chain_id: chainId,
+        })
+        .build(),
+    );
+
+    if (selectedAccountGroup) {
       navigate(
         getMultichainAccountAddressListReceivePagePath(selectedAccountGroup),
       );
     } else {
-      // Show the traditional receive modal
       setShowReceiveModal(true);
     }
   }, [selectedAccountGroup, navigate, trackEvent, trackingLocation, chainId]);
@@ -603,7 +636,10 @@ const CoinButtons = ({
           },
           {
             label: t('receive'),
-            onClick: handleReceiveOnClick,
+            // Use no-transition version inside dropdown
+            onClick: handleReceiveOnClickNoTransition,
+            // But if this becomes the single primary action, preserve forward transition
+            onClickForSingle: handleReceiveOnClick,
             testId: `${classPrefix}-overview-receive`,
             iconName: IconName.Received,
             enabled: true,
