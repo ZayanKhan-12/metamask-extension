@@ -303,7 +303,7 @@
     "@metamask/messenger": "^2.0.0",
     "@metamask/assets-controller@npm:^10.2.0": "patch:@metamask/assets-controller@npm%3A11.0.0#~/.yarn/patches/@metamask-assets-controller-npm-11.0.0-401c665ed9.patch",
     "@metamask/assets-controller@npm:^11.0.0": "patch:@metamask/assets-controller@npm%3A11.0.0#~/.yarn/patches/@metamask-assets-controller-npm-11.0.0-401c665ed9.patch",
-    "metamask-crx@workspace:./@metamask/react-data-query@npm:^0.2.2": "npm:@metamask-previews/react-data-query@0.2.2-preview-789f7f935"
+    "metamask-crx@workspace:./@metamask/react-data-query@npm:^0.2.2": "npm:@metamask-previews/react-data-query@0.2.2-preview-0dfe3b334"
   },
   "dependencies": {
     "@babel/runtime": "patch:@babel/runtime@npm%3A7.29.2#~/.yarn/patches/@babel-runtime-npm-7.29.2-b49cad1c67.patch",
